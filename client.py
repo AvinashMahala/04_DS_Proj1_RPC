@@ -4,8 +4,8 @@ import threading
 import time
 import traceback
 from colorama import Fore, Style, init
-import pickle
 import base64
+import subprocess
 
 SYNC_FOLDER = "sync_folder"
 SYNC_INTERVAL = 5  # Sync interval in seconds
@@ -15,6 +15,8 @@ class FileClient:
         self.file_server = Pyro4.Proxy("PYRONAME:file.server@localhost:9090")
         self.comp_server = Pyro4.Proxy("PYRONAME:computation.server@localhost:9090")
         self.last_sync_time = 0
+        self.auto_sync = False
+        self.sync_process = None
 
     def handle_exception(self, message, exception):
         print(f"{Fore.RED}Error: {message}{Style.RESET_ALL}")
@@ -125,13 +127,34 @@ class FileClient:
             print(f"{Fore.RED}Error while listing files: {e}{Style.RESET_ALL}")
             return []
 
+    def start_auto_sync(self):
+        if self.auto_sync:
+            print(f"{Fore.YELLOW}Auto sync is already running!{Style.RESET_ALL}")
+            return
+
+        self.auto_sync = True
+        self.sync_process = subprocess.Popen(["python", "client_sync.py"])
+
+        print(f"{Fore.GREEN}Auto sync started in a separate terminal!{Style.RESET_ALL}")
+
+    def stop_auto_sync(self):
+        if not self.auto_sync:
+            print(f"{Fore.YELLOW}Auto sync is not running!{Style.RESET_ALL}")
+            return
+
+        self.auto_sync = False
+        self.sync_process.terminate()
+        self.sync_process.wait()
+
+        print(f"{Fore.GREEN}Auto sync stopped!{Style.RESET_ALL}")
+
 def main():
     client = FileClient()
 
-    # # Start synchronization in a separate thread
-    # sync_thread = threading.Thread(target=client.synchronize)
-    # sync_thread.daemon = True  # Allow the program to exit even if the thread is still running
-    # sync_thread.start()
+    # Start synchronization in a separate thread
+    sync_thread = threading.Thread(target=client.synchronize)
+    sync_thread.daemon = True  # Allow the program to exit even if the thread is still running
+    sync_thread.start()
 
     while True:
         print("\n Choose an option:")
@@ -141,9 +164,12 @@ def main():
         print("   4. RENAME: Rename a file.")
         print("   5. ADD: Add Two Numbers.")
         print("   6. SORT: Sort a given an array of records.")
-        print("   7. Exit \n")
+        print("   7. SYNC NOW: Sync immediately.")
+        print("   8. START AUTO SYNC: Start automatic synchronization.")
+        print("   9. STOP AUTO SYNC: Stop automatic synchronization.")
+        print("   10. EXIT: Exit the program.\n")
         command = input("Enter the option number: ")
-        # command = input(f"{Fore.CYAN}Enter command (UPLOAD, DOWNLOAD, DELETE, RENAME, ADD, SORT): {Style.RESET_ALL}")
+
         if command == "1":
             file_path = input("Enter file path: ")
             client.upload(file_path)
@@ -168,6 +194,12 @@ def main():
             result = client.sort(array)
             print(f"Sorted array: {result}")
         elif command == "7":
+            client.perform_sync()
+        elif command == "8":
+            client.start_auto_sync()
+        elif command == "9":
+            client.stop_auto_sync()
+        elif command == "10":
             break
         else:
             print(f"{Fore.YELLOW}Invalid option!{Style.RESET_ALL}")

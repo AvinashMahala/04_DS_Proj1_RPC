@@ -4,7 +4,6 @@ import threading
 import time
 import traceback
 from colorama import Fore, Style, init
-import pickle
 import base64
 
 UPLOADS_FOLDER = "uploads"
