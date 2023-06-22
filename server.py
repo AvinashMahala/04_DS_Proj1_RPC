@@ -40,19 +40,19 @@ class FileServer:
         try:
             file_path = os.path.join(UPLOADS_FOLDER, file_name)
             if os.path.isfile(file_path):
-                try:
-                    with open(file_path, "rb") as file:
-                        return Pyro4.util.SerializerBase().serializeData(file.read())
-                except IOError as e:
-                    print(f"SERVER: Error while downloading file '{file_name}': {e}")
+                with open(file_path, "rb") as file:
+                    file_data = file.read()
+                    encoded_data = base64.b64encode(file_data).decode("utf-8")
+                    return encoded_data
             else:
                 print(f"SERVER: File '{file_name}' not found on the server")
-            return None
+        except IOError as e:
+            print(f"SERVER: Error while downloading file '{file_name}': {e}")
         except Exception as e:
             print(f"SERVER: Error while downloading file '{file_name}': {e}")
             import traceback
             traceback.print_exc()
-            return None
+        return None
 
     def delete(self, file_name):
         try:

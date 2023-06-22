@@ -29,9 +29,9 @@ class FileClient:
                 encoded_data = base64.b64encode(file_data).decode("utf-8")
                 success = self.file_server.upload(file_name, encoded_data)
                 if success:
-                    print(f"File '{file_name}' uploaded successfully")
+                    print(f"{Fore.GREEN}File '{file_name}' uploaded successfully.")
                 else:
-                    print(f"Error while uploading file '{file_name}'")
+                    print(f"Error while uploading file '{file_name}'.")
         except IOError as e:
             msg = f"Error while reading file '{file_path}'"
             self.handle_exception(msg, e)
@@ -41,17 +41,20 @@ class FileClient:
 
     def download(self, file_name):
         try:
-            file_data_serialized = self.file_server.download(file_name)
-            if file_data_serialized:
-                file_data = pickle.loads(file_data_serialized)
+            file_data = self.file_server.download(file_name)
+            if file_data is not None:
                 file_path = os.path.join(SYNC_FOLDER, file_name)
+                decoded_data = base64.b64decode(file_data)
                 with open(file_path, "wb") as file:
-                    file.write(file_data)
-                print(f"{Fore.GREEN}File '{file_name}' downloaded successfully{Style.RESET_ALL}")
+                    file.write(decoded_data)
+                print(f"{Fore.GREEN}File '{file_name}' downloaded successfully.")
             else:
-                print(f"{Fore.RED}File '{file_name}' not found on the server{Style.RESET_ALL}")
+                print(f"Error while downloading file '{file_name}'")
+        except IOError as e:
+            msg = f"Error while writing file '{file_name}'."
+            self.handle_exception(msg, e)
         except Exception as e:
-            msg = f"Error while downloading file '{file_name}'"
+            msg = f"Error while downloading file '{file_name}'."
             self.handle_exception(msg, e)
 
     def delete(self, file_name):
@@ -131,32 +134,44 @@ def main():
     # sync_thread.start()
 
     while True:
-        command = input(f"{Fore.CYAN}Enter command (UPLOAD, DOWNLOAD, DELETE, RENAME, ADD, SORT): {Style.RESET_ALL}")
-        if command == "UPLOAD":
+        print("\n Choose an option:")
+        print("   1. UPLOAD: Upload a file.")
+        print("   2. DOWNLOAD: Download a file.")
+        print("   3. DELETE: Delete a file.")
+        print("   4. RENAME: Rename a file.")
+        print("   5. ADD: Add Two Numbers.")
+        print("   6. SORT: Sort a given an array of records.")
+        print("   7. Exit \n")
+        command = input("Enter the option number: ")
+        # command = input(f"{Fore.CYAN}Enter command (UPLOAD, DOWNLOAD, DELETE, RENAME, ADD, SORT): {Style.RESET_ALL}")
+        if command == "1":
             file_path = input("Enter file path: ")
             client.upload(file_path)
-        elif command == "DOWNLOAD":
+        elif command == "2":
             file_name = input("Enter file name: ")
             client.download(file_name)
-        elif command == "DELETE":
+        elif command == "3":
             file_name = input("Enter file name: ")
             client.delete(file_name)
-        elif command == "RENAME":
+        elif command == "4":
             old_name = input("Enter old file name: ")
             new_name = input("Enter new file name: ")
             client.rename(old_name, new_name)
-        elif command == "ADD":
+        elif command == "5":
             i = int(input("Enter first number: "))
             j = int(input("Enter second number: "))
             result = client.add(i, j)
             print(f"Addition result: {result}")
-        elif command == "SORT":
+        elif command == "6":
             array = input("Enter the array (comma-separated values): ").split(",")
             array = [int(x.strip()) for x in array]
             result = client.sort(array)
             print(f"Sorted array: {result}")
+        elif command == "7":
+            break
         else:
-            print(f"{Fore.RED}Invalid command{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}Invalid option!{Style.RESET_ALL}")
+    print("Exiting...")
 
 if __name__ == "__main__":
     # Initialize colorama for cross-platform styling
