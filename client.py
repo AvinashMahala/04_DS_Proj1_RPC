@@ -15,8 +15,8 @@ class FileClient:
         self.file_server = Pyro4.Proxy("PYRONAME:file.server@localhost:9090")
         self.comp_server = Pyro4.Proxy("PYRONAME:computation.server@localhost:9090")
         self.last_sync_time = 0
-        self.auto_sync = False
-        self.sync_process = None
+        self.sync_thread = None
+        self.is_syncing = False
 
     def handle_exception(self, message, exception):
         print(f"{Fore.RED}Error: {message}{Style.RESET_ALL}")
@@ -92,14 +92,14 @@ class FileClient:
             print(f"{Fore.RED}Error while performing sort: {e}{Style.RESET_ALL}")
 
     def synchronize(self):
-        while True:
+        while self.is_syncing:
             # Check if it's time to sync
             current_time = time.time()
             if current_time - self.last_sync_time >= SYNC_INTERVAL:
                 self.last_sync_time = current_time
                 self.perform_sync()
 
-            time.sleep(1)  # Sleep for 1 second
+            time.sleep(SYNC_INTERVAL)  # Sleep for SYNC_INTERVAL second(s).
 
     def perform_sync(self):
         # Get the list of files in the sync folder
@@ -127,26 +127,23 @@ class FileClient:
             print(f"{Fore.RED}Error while listing files: {e}{Style.RESET_ALL}")
             return []
 
-    def start_auto_sync(self):
-        if self.auto_sync:
-            print(f"{Fore.YELLOW}Auto sync is already running!{Style.RESET_ALL}")
-            return
+    def start_sync(self):
+        if self.is_syncing:
+            print("Sync is already in progress.")
+        else:
+            self.is_syncing = True
+            self.sync_thread = threading.Thread(target=self.synchronize)
+            self.sync_thread.start()
+            print("Sync started.")
 
-        self.auto_sync = True
-        self.sync_process = subprocess.Popen(["python", "client_sync.py"])
-
-        print(f"{Fore.GREEN}Auto sync started in a separate terminal!{Style.RESET_ALL}")
-
-    def stop_auto_sync(self):
-        if not self.auto_sync:
-            print(f"{Fore.YELLOW}Auto sync is not running!{Style.RESET_ALL}")
-            return
-
-        self.auto_sync = False
-        self.sync_process.terminate()
-        self.sync_process.wait()
-
-        print(f"{Fore.GREEN}Auto sync stopped!{Style.RESET_ALL}")
+    def stop_sync(self):
+        if self.is_syncing:
+            self.is_syncing = False
+            self.sync_thread.join()
+            self.sync_thread = None
+            print("Sync stopped.")
+        else:
+            print("Sync is not currently active.")
 
 def main():
     client = FileClient()
@@ -196,9 +193,9 @@ def main():
         elif command == "7":
             client.perform_sync()
         elif command == "8":
-            client.start_auto_sync()
+            client.start_sync()
         elif command == "9":
-            client.stop_auto_sync()
+            client.stop_sync()
         elif command == "10":
             break
         else:
