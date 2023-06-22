@@ -12,6 +12,7 @@ SYNC_FOLDER = "sync_folder"
 @Pyro4.expose
 class FileServer:
     def __init__(self):
+        self.sync_folder = SYNC_FOLDER
         if not os.path.exists(UPLOADS_FOLDER):
             os.makedirs(UPLOADS_FOLDER)
         if not os.path.exists(SYNC_FOLDER):
@@ -100,6 +101,13 @@ class FileServer:
             print(f"SERVER: Error while listing files: {e}")
             import traceback
             traceback.print_exc()
+            return None
+    
+    def get_last_modified(self, file_name):
+        file_path = os.path.join(self.sync_folder, file_name)
+        if os.path.exists(file_path):
+            return os.path.getmtime(file_path)
+        else:
             return None
 
 @Pyro4.expose
