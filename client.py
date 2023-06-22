@@ -5,6 +5,7 @@ import time
 import traceback
 from colorama import Fore, Style, init
 import pickle
+import base64
 
 SYNC_FOLDER = "sync_folder"
 SYNC_INTERVAL = 5  # Sync interval in seconds
@@ -25,23 +26,24 @@ class FileClient:
             with open(file_path, "rb") as file:
                 file_name = file_path.split("/")[-1]
                 file_data = file.read()
-            file_size = len(file_data)
-            file_data_serialized = pickle.dumps(file_data)
-            success = self.file_server.upload(file_name, file_data_serialized, file_size)
-            if success:
-                print(f"File '{file_name}' uploaded successfully")
-            else:
-                print(f"Error while uploading file '{file_name}'")
+                encoded_data = base64.b64encode(file_data).decode("utf-8")
+                success = self.file_server.upload(file_name, encoded_data)
+                if success:
+                    print(f"File '{file_name}' uploaded successfully")
+                else:
+                    print(f"Error while uploading file '{file_name}'")
         except IOError as e:
-            print(f"Error while reading file '{file_path}': {e}")
+            msg = f"Error while reading file '{file_path}'"
+            self.handle_exception(msg, e)
         except Exception as e:
-            print(f"Error while uploading file '{file_path}': {e}")
-            traceback.print_exc()
+            msg = f"Error while uploading file '{file_path}'"
+            self.handle_exception(msg, e)
 
     def download(self, file_name):
         try:
-            file_data, file_size = self.file_server.download(file_name)
-            if file_data:
+            file_data_serialized = self.file_server.download(file_name)
+            if file_data_serialized:
+                file_data = pickle.loads(file_data_serialized)
                 file_path = os.path.join(SYNC_FOLDER, file_name)
                 with open(file_path, "wb") as file:
                     file.write(file_data)
@@ -49,7 +51,8 @@ class FileClient:
             else:
                 print(f"{Fore.RED}File '{file_name}' not found on the server{Style.RESET_ALL}")
         except Exception as e:
-            print(f"{Fore.RED}Error while downloading file '{file_name}': {e}{Style.RESET_ALL}")
+            msg = f"Error while downloading file '{file_name}'"
+            self.handle_exception(msg, e)
 
     def delete(self, file_name):
         try:
@@ -122,11 +125,16 @@ class FileClient:
 def main():
     client = FileClient()
 
+    # # Start synchronization in a separate thread
+    # sync_thread = threading.Thread(target=client.synchronize)
+    # sync_thread.daemon = True  # Allow the program to exit even if the thread is still running
+    # sync_thread.start()
+
     while True:
         command = input(f"{Fore.CYAN}Enter command (UPLOAD, DOWNLOAD, DELETE, RENAME, ADD, SORT): {Style.RESET_ALL}")
         if command == "UPLOAD":
-            file_name = input("Enter file name: ")
-            client.upload(file_name)
+            file_path = input("Enter file path: ")
+            client.upload(file_path)
         elif command == "DOWNLOAD":
             file_name = input("Enter file name: ")
             client.download(file_name)
