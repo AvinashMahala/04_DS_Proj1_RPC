@@ -164,7 +164,7 @@ def main():
         print("   7. SYNC NOW: Sync immediately.")
         print("   8. START AUTO SYNC: Start automatic synchronization.")
         print("   9. STOP AUTO SYNC: Stop automatic synchronization.")
-        print("   10. EXIT: Exit the program.\n")
+        print("   0. EXIT: Exit the program.\n")
         command = input("Enter the option number: ")
 
         if command == "1":
@@ -196,7 +196,7 @@ def main():
             client.start_sync()
         elif command == "9":
             client.stop_sync()
-        elif command == "10":
+        elif command == "0":
             break
         else:
             print(f"{Fore.YELLOW}Invalid option!{Style.RESET_ALL}")
