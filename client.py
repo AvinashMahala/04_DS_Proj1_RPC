@@ -192,6 +192,7 @@ def main():
             print(f"Sorted array: {result}")
         elif command == "7":
             client.perform_sync()
+            print("Sync is Completed.")
         elif command == "8":
             client.start_sync()
         elif command == "9":
