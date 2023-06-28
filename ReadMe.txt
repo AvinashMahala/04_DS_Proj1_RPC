@@ -70,9 +70,9 @@ Server-side Program (server.py)
     __init__(): Initialize the computation server and set up the necessary attributes.
     Computation methods: Methods for performing addition and sorting operations.
     Main function: The entry point of the server program.
-    Create instances of FileServer and ComputationServer.
-    Register the server objects with Pyro4.
-    Start the Pyro4 daemon to listen for client requests.
+        Create instances of FileServer and ComputationServer.
+        Register the server objects with Pyro4.
+        Start the Pyro4 daemon to listen for client requests.
 
 The code follows an object-oriented approach, with classes representing different components and methods encapsulating specific functionalities.
 The main functions of both the client and server programs act as the entry points, where the necessary objects are instantiated and the programs are executed.
@@ -115,7 +115,6 @@ File Server
 
         python server.py
 
-
 Computation Server
     The Computation Server performs computations on behalf of the client. 
     It exposes methods for addition and sorting operations. 
@@ -129,57 +128,49 @@ Client
 
         python client.py
 
-
-
 Sync Folder
     The client maintains a sync folder where downloaded files are stored locally. 
     By default, the sync folder is named "sync_folder" and resides in the same directory as the `client.py` script.
     You can modify the `SYNC_FOLDER` constant in the script to change the sync folder location.
 
-
 During the implementation of the client-side and server-side programs, 
 I gained several insights and encountered a few issues. Here's a summary of what I learned and the challenges I faced:
 
 Pyro4 and Remote Method Invocation (RMI):
+    I learned about Pyro4, a powerful library for implementing distributed systems in Python.
+    Pyro4 utilizes Remote Method Invocation (RMI) to enable communication between the client and server using Python objects.
+    This allowed me to invoke remote methods on the server-side from the client-side seamlessly.
 
-I learned about Pyro4, a powerful library for implementing distributed systems in Python.
-Pyro4 utilizes Remote Method Invocation (RMI) to enable communication between the client and server using Python objects.
-This allowed me to invoke remote methods on the server-side from the client-side seamlessly.
 File Upload and Download:
-
-I implemented the functionality to upload and download files between the client and server.
-I learned how to read file data, encode it using base64, transmit it over the network, and decode it on the receiving end.
+    I implemented the functionality to upload and download files between the client and server.
+    I learned how to read file data, encode it using base64, transmit it over the network, and decode it on the receiving end.
 
 Synchronization:
-One of the key features of the project was automatic synchronization of files between the client and server.
-I implemented a synchronization mechanism that periodically checks for new, modified, and deleted files on both sides and performs the necessary actions to ensure consistency.
-This involved comparing file timestamps, handling file transfers, and managing file operations.
+    One of the key features of the project was automatic synchronization of files between the client and server.
+    I implemented a synchronization mechanism that periodically checks for new, modified, and deleted files on both sides and performs the necessary actions to ensure consistency.
+    This involved comparing file timestamps, handling file transfers, and managing file operations.
+
 Error Handling and Exception Management:
+    I focused on robust error handling and exception management to ensure the programs can gracefully handle unexpected scenarios.
+    I learned to catch and handle various exceptions that can occur during file operations, network communication, and method invocations.
 
-I focused on robust error handling and exception management to ensure the programs can gracefully handle unexpected scenarios.
-I learned to catch and handle various exceptions that can occur during file operations, network communication, and method invocations.
 Threading and Concurrency:
+    To enable automatic synchronization without blocking the main program, I utilized threading to run the synchronization process concurrently.
+    I learned about creating and managing threads, synchronization mechanisms, and handling thread termination.
 
-To enable automatic synchronization without blocking the main program, I utilized threading to run the synchronization process concurrently.
-I learned about creating and managing threads, synchronization mechanisms, and handling thread termination.
 Challenges and Issues:
 
-Synchronization Timing:
-
-Determining the optimal synchronization timing was challenging. I had to strike a balance between frequent syncing for real-time updates and longer intervals to minimize network and computational overhead.
-Exception Handling:
-
-Managing and handling exceptions in a distributed system can be complex. I encountered some difficulties in handling exceptions across different components and ensuring error messages are informative and helpful.
-Network Configuration:
-
-Configuring the network settings, such as hostname, port number, and Pyro4 name server, required attention to ensure proper communication between the client and server. Ensuring the firewall settings allow the required network traffic was also a consideration.
-Overall, this project provided valuable hands-on experience in building a client-server application using Pyro4, handling file operations, implementing synchronization, and managing exceptions. It deepened my understanding of distributed systems, network communication, and concurrency.
-
-
-
-
-
-
-
-
+    Synchronization Timing:
+        Determining the optimal synchronization timing was challenging. 
+        I had to strike a balance between frequent syncing for real-time updates and longer intervals to minimize network and computational overhead.
+    
+    Exception Handling:
+        Managing and handling exceptions in a distributed system can be complex. 
+        I encountered some difficulties in handling exceptions across different components and ensuring error messages are informative and helpful.
+    
+    Network Configuration:
+        Configuring the network settings, such as hostname, port number, and Pyro4 name server, required attention to ensure proper communication between the client and server. 
+        Ensuring the firewall settings allow the required network traffic was also a consideration.
+        Overall, this project provided valuable hands-on experience in building a client-server application using Pyro4, handling file operations, implementing synchronization, and managing exceptions. 
+        It deepened my understanding of distributed systems, network communication, and concurrency.
 
