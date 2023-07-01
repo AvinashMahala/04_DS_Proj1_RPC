@@ -1,6 +1,5 @@
 ---------------------------------------------------
-Name     					- Avinash Mahala
-UTA ID   					- 1002079433
+Name     					- Avinash Mahala(1002079433) & Amit Munna Gupta(1002066302)
 Programming Language Used	- Python 3.9.7
 ---------------------------------------------------
 Device Specifications:-
@@ -78,7 +77,7 @@ The code follows an object-oriented approach, with classes representing differen
 The main functions of both the client and server programs act as the entry points, where the necessary objects are instantiated and the programs are executed.
 
 ---------------------------------------------------
-Installation
+Steps To Run
     1. Clone the repository or download the `server.py` and `client.py` scripts.
     2. Install the required dependencies using pip:
             pip install Pyro4 colorama

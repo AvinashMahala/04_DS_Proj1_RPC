@@ -7,6 +7,10 @@ The file server needs to support four basic operations: UPLOAD, DOWNLOAD, DELETE
 The computation server provides a set of predefined procedures that can be called from a client. The server should support add(i,j), and sort(array A).
 You can use any programming language to implement this project.
 
+https://docs.google.com/document/d/1W48EcuJl6pRcbRfCvdawZQdw74fPxbNHt2h-bs6Nnso/edit?usp=sharing
+
+
+
 ## Part-1 (20 points)  
 Implement a multi-threaded file server that supports UPLOAD, DOWNLOAD, DELETE, and RENAME file operations. Use different folders to hold files downloaded to the client or uploaded to the server. 
 

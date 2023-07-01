@@ -161,9 +161,8 @@ def main():
         print("   4. RENAME: Rename a file.")
         print("   5. ADD: Add Two Numbers.")
         print("   6. SORT: Sort a given an array of records.")
-        print("   7. SYNC NOW: Sync immediately.")
-        print("   8. START AUTO SYNC: Start automatic synchronization.")
-        print("   9. STOP AUTO SYNC: Stop automatic synchronization.")
+        print("   7. START AUTO SYNC: Start automatic synchronization.")
+        print("   8. STOP AUTO SYNC: Stop automatic synchronization.")
         print("   0. EXIT: Exit the program.\n")
         command = input("Enter the option number: ")
 
@@ -191,11 +190,8 @@ def main():
             result = client.sort(array)
             print(f"Sorted array: {result}")
         elif command == "7":
-            client.perform_sync()
-            print("Sync is Completed.")
-        elif command == "8":
             client.start_sync()
-        elif command == "9":
+        elif command == "8":
             client.stop_sync()
         elif command == "0":
             break
