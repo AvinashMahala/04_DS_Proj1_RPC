@@ -18,6 +18,13 @@ class FileServer:
         if not os.path.exists(SYNC_FOLDER):
             os.makedirs(SYNC_FOLDER)
 
+    def check_file_exists(self, file_name):
+        try:
+            file_path = os.path.join(self.folder_path, file_name)
+            return os.path.exists(file_path)
+        except Exception:
+            return False
+
     def upload(self, file_name, file_data):
         try:
             file_path = os.path.join(UPLOADS_FOLDER, file_name)

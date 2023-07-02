@@ -8,7 +8,7 @@ import base64
 import subprocess
 
 SYNC_FOLDER = "client_downloads"
-SYNC_INTERVAL = 2  # Sync interval in seconds
+SYNC_INTERVAL = 5  # Sync interval in seconds
 
 class FileClient:
     def __init__(self):
@@ -33,12 +33,9 @@ class FileClient:
                 file_name = os.path.basename(file_path)
                 file_data = file.read()
                 encoded_data = base64.b64encode(file_data).decode("utf-8")
-                success = self.file_server.check_file_exists(file_name)  # Check if file already exists on the server
+                success = self.file_server.upload(file_name, encoded_data)
                 if success:
-                    confirm_overwrite = input(f"A file with the name '{file_name}' already exists on the server. Do you want to overwrite it? (Y/N): ")
-                    if confirm_overwrite.lower() != 'y':
-                        print(f"{Fore.YELLOW}Upload cancelled. File was not overwritten.{Style.RESET_ALL}")
-                        return
+                    print(f"{Fore.GREEN}File '{file_name}' uploaded successfully.")
                 else:
                     print(f"Error while uploading file '{file_name}'.")
         except IOError as e:
