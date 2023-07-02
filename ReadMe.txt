@@ -102,7 +102,6 @@ Steps To Run
                 - RENAME: Rename a file on the file server.
                 - ADD: Perform addition of two numbers using the computation server.
                 - SORT: Sort an array of records using the computation server.
-                - SYNC NOW: Trigger an immediate synchronization with the file server.
                 - START AUTO SYNC: Start automatic synchronization at regular intervals.
                 - STOP AUTO SYNC: Stop automatic synchronization.
                 - EXIT: Exit the program.
