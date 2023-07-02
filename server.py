@@ -6,8 +6,8 @@ import traceback
 from colorama import Fore, Style, init
 import base64
 
-UPLOADS_FOLDER = "uploads"
-SYNC_FOLDER = "sync_folder"
+UPLOADS_FOLDER = "server_uploads"
+SYNC_FOLDER = "client_downloads"
 
 @Pyro4.expose
 class FileServer:

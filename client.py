@@ -7,8 +7,8 @@ from colorama import Fore, Style, init
 import base64
 import subprocess
 
-SYNC_FOLDER = "sync_folder"
-SYNC_INTERVAL = 5  # Sync interval in seconds
+SYNC_FOLDER = "client_downloads"
+SYNC_INTERVAL = 2  # Sync interval in seconds
 
 class FileClient:
     def __init__(self):
@@ -105,20 +105,32 @@ class FileClient:
         # Get the list of files in the sync folder
         local_files = os.listdir(SYNC_FOLDER)
 
-        # Check for new files or modified files
+        # Check for new files, modified files, and deleted files
+        server_files = self.list_files()
         for file_name in local_files:
             file_path = os.path.join(SYNC_FOLDER, file_name)
             if os.path.isfile(file_path):
                 # Check if the file was modified after the last sync
                 if os.path.getmtime(file_path) > self.last_sync_time:
                     self.upload(file_path)
+            elif file_name not in server_files:
+                # File doesn't exist on the server, upload it
+                self.upload(file_path)
 
-        # Check for deleted files
-        server_files = self.list_files()
         for file_name in server_files:
             file_path = os.path.join(SYNC_FOLDER, file_name)
             if not os.path.isfile(file_path):
+                # File exists on the server but not locally, download it
                 self.download(file_name)
+
+        # Check for deleted files on the server
+        for file_name in server_files:
+            file_path = os.path.join(SYNC_FOLDER, file_name)
+            if not os.path.exists(file_path):
+                # File exists on the server but not locally, delete it from the server
+                client = FileClient()
+                # self.file_server.delete(file_name)
+                client.delete(file_name)
 
     def list_files(self):
         try:
