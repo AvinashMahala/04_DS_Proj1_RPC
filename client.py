@@ -25,13 +25,20 @@ class FileClient:
 
     def upload(self, file_path):
         try:
+            if not os.path.exists(file_path) or not os.path.isfile(file_path):
+                print(f"{Fore.YELLOW}File '{file_path}' does not exist or is not accessible.{Style.RESET_ALL}")
+                return
+
             with open(file_path, "rb") as file:
-                file_name = file_path.split("/")[-1]
+                file_name = os.path.basename(file_path)
                 file_data = file.read()
                 encoded_data = base64.b64encode(file_data).decode("utf-8")
-                success = self.file_server.upload(file_name, encoded_data)
+                success = self.file_server.check_file_exists(file_name)  # Check if file already exists on the server
                 if success:
-                    print(f"{Fore.GREEN}File '{file_name}' uploaded successfully.")
+                    confirm_overwrite = input(f"A file with the name '{file_name}' already exists on the server. Do you want to overwrite it? (Y/N): ")
+                    if confirm_overwrite.lower() != 'y':
+                        print(f"{Fore.YELLOW}Upload cancelled. File was not overwritten.{Style.RESET_ALL}")
+                        return
                 else:
                     print(f"Error while uploading file '{file_name}'.")
         except IOError as e:
@@ -40,6 +47,7 @@ class FileClient:
         except Exception as e:
             msg = f"Error while uploading file '{file_path}'"
             self.handle_exception(msg, e)
+
 
     def download(self, file_name):
         try:
